@@ -38,7 +38,7 @@ public class LayoutTiles : MonoBehaviour {
 		roomsXMLR.Parse(roomsText.text); //Parse the Rooms.xml file
 		roomsXML = roomsXMLR.xml["xml"][0]["room"]; //Pull all the <room>s
 
-		//Build thee 0th Room
+		//Build the 0th Room
 		BuildRoom(roomNumber);
 	}
 
@@ -86,9 +86,10 @@ public class LayoutTiles : MonoBehaviour {
 		}
 		//Clear the tiles Array
 		tiles = new Tile[100, 100]; //Arbitrary max room size is 100x100
+
 		//Declare a number of local fields that we'll use later
 		Tile ti;
-		string type, rawType, tileTextStr;
+		string type, rawType, tileTexStr;
 		GameObject go;
 		int height;
 		float maxY = roomRows.Length-1;
@@ -121,7 +122,7 @@ public class LayoutTiles : MonoBehaviour {
 			}
 			//Set the texture for floor wall based on <room> attributes
 			if (type == ".") {
-				tileTextStr = floorTexStr;
+				tileTexStr = floorTexStr;
 			} else if (type == "|") {
 				tileTexStr = wallTexStr;
 			}
