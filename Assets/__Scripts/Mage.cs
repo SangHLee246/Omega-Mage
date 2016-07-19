@@ -39,18 +39,28 @@ public class Mage : PT_MonoBehaviour {
 	static public bool DEBUG = true;
 
 	public float mTapTime = 0.1f; //How long is considered a tap
+	public GameObject tapIndicatorPrefab; //Prefab of the tap indicator
 	public float mDragDist = 5; //Min dist in pixels to be a drag
 
 	public float activeScreenWidth = 1; //% of the screen to use
+
+	public float speed = 2; //The speed at which _Mage walks
 
 	public bool ___________________;
 
 	public MPhase mPhase = MPhase.idle;
 	public List<MouseInfo> mouseInfos = new List<MouseInfo>();
 
+	public bool walking = false;
+	public Vector3 walkTarget;
+	public Transform characterTrans;
+
 	void Awake() {
 		S = this; //Set the Mage Singleton
 		mPhase = MPhase.idle;
+
+		//Find the characterTrans to rotate with Face()
+		characterTrans = transform.Find("CharacterTrans");
 	}
 
 	void Update() {
@@ -152,6 +162,8 @@ public class Mage : PT_MonoBehaviour {
 	void MouseTap() {
 		//Something tapped like a button
 		if (DEBUG) print("Mage.MouseTap()");
+		WalkTo(lastMouseInfo.loc); //Walk to the latest mouseInfo pos
+		ShowTap(lastMouseInfo.loc); //Show where the player tapped
 	}
 
 	void MouseDrag() {
@@ -163,5 +175,60 @@ public class Mage : PT_MonoBehaviour {
 		//The mouse is relased after being drug
 		if (DEBUG) print("Mage.MouseDragUp()");
 	}
-}
 
+	//Walk to a specific position. The position.z is always 0
+	public void WalkTo(Vector3 xTarget) {
+		walkTarget = xTarget; //Set the point to walk to
+		walkTarget.z = 0; //Force z=0
+		walking = true; //Now the Mage is walking
+		Face(walkTarget); //Look in the direction of the walkTarget
+	}
+
+	public void Face(Vector3 poi) { //Face toward a point of interest
+		Vector3 delta = poi-pos; //Find vector to the point of interest
+		//Use Atan2 to get the rotation around Z that points the X-
+		//_mage:CharacterTrans toward poi
+		float rZ = Mathf.Rad2Deg * Mathf.Atan2(delta.y, delta.x);
+		//Set the rotation of characterTrans (doesn't actually rotate _Mage)
+		characterTrans.rotation = Quaternion.Euler(0,0,rZ);
+	}
+
+	public void StopWalking() {//Stops the _Mage from walking
+		walking = false;
+		rigidbody.velocity = Vector3.zero;
+	}
+
+	void FixedUpdate() {//Happens every physics step (i.e., 50 times/second)
+		if (walking) { //If Mage is walking
+			if ((walkTarget-pos).magnitude < speed*Time.fixedDeltaTime) {
+				//If Mage is very close to walkTarget, just stop there
+				pos = walkTarget;
+				StopWalking();
+			} else { 
+				//Otherwise, move toward walkTarget
+				rigidbody.velocity = (walkTarget - pos).normalized * speed;
+			}
+		} else {
+			//If not walking, velocity should be zero
+			rigidbody.velocity = Vector3.zero;
+		}
+	}
+
+	void OnCollisionEnter(Collision coll) {
+		GameObject otherGO = coll.gameObject;
+		//Colliding with a wall can also stop walking
+		Tile ti = otherGO.GetComponent<Tile>();
+		if(ti != null) {
+			if (ti.height > 0) {//If ti.height is > 0
+				//Then this ti is a wall, and Mage should stop
+				StopWalking();
+			}
+		}
+	}
+
+	//Show where the player tapped
+	public void ShowTap(Vector3 loc) {
+		GameObject go = Instantiate(tapIndicatorPrefab) as GameObject;
+		go.transform.position = loc;
+	}
+}
