@@ -28,7 +28,7 @@ public class MouseInfo {
 	}
 
 	public RaycastHit Raycast(int mask) {
-		hit = PHysics.Raycast(ray, out hitInfo mask);
+		hit = Physics.Raycast(ray, out hitInfo, mask);
 		return(hitInfo);
 	}
 }
@@ -55,8 +55,8 @@ public class Mage : PT_MonoBehaviour {
 
 	void Update() {
 		//Find whether the mouse button 0 was pressed or released this frame
-		bool b0Down = Input.GetMouseButtonDown (0);
-		bool b0Up = Input.GetMouseButtonUp (0);
+		bool bODown = Input.GetMouseButtonDown (0);
+		bool bOUp = Input.GetMouseButtonUp (0);
 
 		//Handle all input here )except for Inventory buttons)
 		/*
@@ -67,12 +67,12 @@ public class Mage : PT_MonoBehaviour {
 		 * 4. Tap on an enemy to attack (or force-push away without an element)
 		 * */
 		//An example of using < to return a bool value
-		bool inActiveArea = (float)Input.mousePosition.x / Screen.width < activeScreenWidth;
+		bool inActiveArea = (float) Input.mousePosition.x / Screen.width < activeScreenWidth;
 
 		//This is handled as an if statement insetad of switch because a tap
 		//can sometimes happen within a single frame
 		if (mPhase == MPhase.idle) {//If the mouse is idle
-			if (b0Down && inActiveArea) {
+			if (bODown && inActiveArea) {
 				mouseInfos.Clear(); //Clear the mouseInfos
 				AddMouseInfo(); //And add a first MouseInfo
 
@@ -86,25 +86,26 @@ public class Mage : PT_MonoBehaviour {
 
 		if (mPhase == MPhase.down) {//if the mouse is down
 			AddMouseInfo(); //Add a MouseInfo for this frame
-			if (b0Up) { //The mouse button was released
+			if (bOUp) { //The mouse button was released
 				MouseTap(); //This was a tap
 				mPhase = MPhase.idle;
 			} else if (Time.time - mouseInfos[0].time > mTapTime) {
 				//If it's been down longer than a tap, this may be a drag, but
 				//to be a drag, it must also have moved a certain number of
-				//pixels o screen
+				//pixels on screen
 				float dragDist = (lastMouseInfo.screenLoc - mouseInfos[0].screenLoc).magnitude;
-				if (dragDist >= mDragDist) { mPhase = MPhase.drag;
+				if (dragDist >= mDragDist) { 
+				mPhase = MPhase.drag;
 				}
 			}
 		}
 
 		if (mPhase == MPhase.drag) {//if the mouse is being drug
 			AddMouseInfo();
-			if (b0Up) {
+			if (bOUp) {
 				//The mouse button was released
 				MouseDragUp();
-				mPhase = Mphase.idle;
+				mPhase = MPhase.idle;
 			} else {
 				MouseDrag(); //Still dragging
 			}
@@ -130,7 +131,37 @@ public class Mage : PT_MonoBehaviour {
 				mouseInfos.Add(mInfo); //Add mInfo to mouseInfos
 			}
 			//This time test is necessary because AddMouseInfo() could be
-			//called twice in one frame
+			//called twice in one frame 
 		}
-
+		return(mInfo); //Return mInfo as well
 	}
+
+	public MouseInfo lastMouseInfo {
+		//Access to the latest MouseInfo
+		get {
+			if(mouseInfos.Count == 0) return(null);
+			return(mouseInfos[mouseInfos.Count-1]);
+		}
+	}
+
+	void MouseDown() {
+		//The mouse was pressed on something (it could be a drag or tap)
+		if (DEBUG) print("Mage.MouseDown()");
+	}
+
+	void MouseTap() {
+		//Something tapped like a button
+		if (DEBUG) print("Mage.MouseTap()");
+	}
+
+	void MouseDrag() {
+		//The mouse is being drug across something
+		if (DEBUG) print("Mage.MouseDrag()");
+	}
+
+	void MouseDragUp() {
+		//The mouse is relased after being drug
+		if (DEBUG) print("Mage.MouseDragUp()");
+	}
+}
+
