@@ -5,7 +5,9 @@ using System.Collections.Generic;
 /*
 TapIndicator makes use of the PT_Move class from ProtoTools. This allows it to 
 use a Bezier curve to alter position, rotation, scale, etc.
-*/
+
+You'll also notice that this adds several public fields to the Inspector
+ */
 
 public class TapIndicator : PT_Mover {
 
@@ -32,7 +34,7 @@ public class TapIndicator : PT_Mover {
 		//You must have an equal number of scales and colors in the Inspector
 		for (int i=0; i<scales.Length; i++) {
 			pLoc = new PT_Loc();
-			pLoc.scale = Vector3.one * scale[i]; //Each scale
+			pLoc.scale = Vector3.one * scales[i]; //Each scale
 			pLoc.pos = tPos;
 			pLoc.color=colors[i]; //and each color
 
