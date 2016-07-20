@@ -78,6 +78,12 @@ public class Mage : PT_MonoBehaviour {
 	public float invincibleDur = 0.5f; //SEconds to be invincible
 	public int invTimesToBlink = 4; //# blinks while invincible
 
+	//Test Code
+	public int showHealingFrames = 2; //# frames to show healing
+	public int HealsLeft = 1; //amount of heals left
+	public int showTeleportFrames = 2; //# of frames to show teleporting
+	//End of Test Code
+
 	public bool ___________________;
 
 	private bool invincibleBool = false; //Is Mage Invincible?
@@ -108,6 +114,13 @@ public class Mage : PT_MonoBehaviour {
 
 	public List<Element> selectedElements = new List<Element>();
 
+	//Test Code
+	public Color[] originalColors;
+	public Material[] materials; //All the materials of this & its children
+	public int remainingHealingFrames = 0; //Healing frames left
+	public int remainingTeleportFrames = 0; //Teleport frames left
+	//End of Test Code
+
 	void Awake() {
 		S = this; //Set the Mage Singleton
 		mPhase = MPhase.idle;
@@ -121,12 +134,36 @@ public class Mage : PT_MonoBehaviour {
 		liner.enabled = false;
 
 		GameObject saGO = new GameObject ("Spell Anchor");
-		//^ Create an empty GameObject named "Spell Anchor". When you create
+		//^ Create an empty GameObject named "fSpell Anchor". When you create
 		//new GameObject this way, it's at P:[0,0,0] R:[0,0,0} S:[1,1,1]
 		spellAnchor = saGO.transform; //Get its transform
+
+		//Test code here
+		materials = Utils.GetAllMaterials (gameObject);
+		originalColors = new Color[materials.Length];
+		for (int i =0; i < materials.Length; i++) {
+			originalColors [i] = materials [i].color;
+		}
+		//end test code
 	}
 
 	void Update() {
+		//Test code here
+		if (remainingHealingFrames > 0) {
+			remainingHealingFrames--;
+			if (remainingHealingFrames == 0) {
+				UnShowHeal ();
+			}
+		}
+
+		if (remainingTeleportFrames > 0) {
+			remainingTeleportFrames--;
+			if (remainingTeleportFrames == 0) {
+				UnShowTeleport ();
+			}
+		}
+		//end test code
+
 		//Find whether the mouse button 0 was pressed or released this frame
 		bool bODown = Input.GetMouseButtonDown (0);
 		bool bOUp = Input.GetMouseButtonUp (0);
@@ -250,11 +287,17 @@ public class Mage : PT_MonoBehaviour {
 		switch (actionStartTag) {
 		case "Mage":
 			//Do nothing
+			CastHealSpell();
+			//CastTeleportSpell();
 			break;
 		case "Ground":
 			//Move to tapped point @ z=0 whether or not an element is selected
 			WalkTo (lastMouseInfo.loc); //Walk to the latest mouseInfo pos
 			ShowTap (lastMouseInfo.loc); //Show where the player tapped
+			break;
+			//Test Code
+		case "Enemy":
+			CastSlowSpell();
 			break;
 		}
 	}
@@ -319,6 +362,58 @@ public class Mage : PT_MonoBehaviour {
 		//Clear the selectedElements; they're consumed by the spell
 		ClearElements ();
 	}
+
+	//Test Code Here
+	void CastHealSpell() {
+		if (selectedElements.Count == 0)
+			return;
+		//Because this  version of the prototype only allows a single element to 
+		//be selected, we can use that 0th element to pick the spell.
+		switch (selectedElements [0].type) {
+		case ElementType.water:
+				health = 4;
+				ShowHeal();
+				HealsLeft = 0;
+				break;
+			//Limit healing somehow
+			//TODO: Add other element types later
+		}
+		
+		//Clear the selectedElements; they're consumed by the spell
+		ClearElements ();
+	}
+
+	void CastTeleportSpell() {
+		if (selectedElements.Count == 0)
+			return;
+		//Because this  version of the prototype only allows a single element to 
+		//be selected, we can use that 0th element to pick the spell.
+		switch (selectedElements [0].type) {
+		case ElementType.air:
+			ShowTeleport();
+			break;
+			//TODO: Add other element types later
+		}
+		
+		//Clear the selectedElements; they're consumed by the spell
+		ClearElements ();
+	}
+	void CastSlowSpell() {
+		if (selectedElements.Count == 0)
+			return;
+		//Because this  version of the prototype only allows a single element to 
+		//be selected, we can use that 0th element to pick the spell.
+		switch (selectedElements [0].type) {
+		case ElementType.earth:
+			EnemyBug.speed = 0.1f;
+			break;
+			//TODO: Add other element types later
+		}
+		
+		//Clear the selectedElements; they're consumed by the spell
+		ClearElements ();
+	}
+	//End Test Code
 
 	//Walk to a specific position. The position.z is always 0
 	public void WalkTo(Vector3 xTarget) {
@@ -585,4 +680,34 @@ public class Mage : PT_MonoBehaviour {
 	public void ClearInput() {
 		mPhase = MPhase.idle;
 	}
+
+	//Test code here
+	void ShowHeal() {
+		foreach (Material m in materials) {
+			m.color = Color.blue;
+		}
+		remainingHealingFrames = showHealingFrames;
+	}
+
+	void ShowTeleport() {
+		foreach (Material m in materials) {
+			m.color = Color.black;
+			speed = 100;
+		}
+		remainingTeleportFrames = showTeleportFrames;
+	}
+
+	void UnShowTeleport() {
+		for (int i=0; i<materials.Length; i++) {
+			materials [i].color = originalColors [i];
+			speed = 2;
+		}
+	}
+
+	void UnShowHeal() {
+		for (int i=0; i<materials.Length; i++) {
+			materials[i].color = originalColors[i];
+		}
+	}
+	//End test Code
 }

@@ -15,7 +15,7 @@ public class EnemySpiker : PT_MonoBehaviour, Enemy {
 		set {roomXMLString = value;}
 	}
 
-	public float speed = 5f;
+	public static float speed = 5f;
 	public string roomXMLString = "{";
 
 	public bool __________________;
