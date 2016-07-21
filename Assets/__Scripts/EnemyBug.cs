@@ -17,6 +17,7 @@ public class EnemyBug : PT_MonoBehaviour, Enemy {
 
 	public string roomXMLString;
 	public static float speed = 0.5f;
+	//public float thisspeed = 0.5f;
 	public float health = 10;
 	public float damageScale = 0.8f;
 	public float damageScaleDuration = 0.25f;
@@ -28,7 +29,7 @@ public class EnemyBug : PT_MonoBehaviour, Enemy {
 	public Vector3 walkTarget;
 	public bool walking;
 	public Transform characterTrans;
-	//STore damage for each element each frame
+	//Store damage for each element each frame
 	public Dictionary<ElementType, float> damageDict;
 	//^NOTE: Dictionaries do not appear in the Unity Inspector
 
