@@ -405,7 +405,8 @@ public class Mage : PT_MonoBehaviour {
 		//be selected, we can use that 0th element to pick the spell.
 		switch (selectedElements [0].type) {
 		case ElementType.earth:
-			EnemyBug.speed = 0.1f;
+
+			GameObject.Find("EnemyBug").GetComponent<EnemyBug>().speed = 0.1f;
 			break;
 			//TODO: Add other element types later
 		}
