@@ -287,8 +287,9 @@ public class Mage : PT_MonoBehaviour {
 		switch (actionStartTag) {
 		case "Mage":
 			//Do nothing
-			CastHealSpell();
+			//CastHealSpell();
 			//CastTeleportSpell();
+			CheckElement();
 			break;
 		case "Ground":
 			//Move to tapped point @ z=0 whether or not an element is selected
@@ -708,6 +709,22 @@ public class Mage : PT_MonoBehaviour {
 	void UnShowHeal() {
 		for (int i=0; i<materials.Length; i++) {
 			materials[i].color = originalColors[i];
+		}
+	}
+
+	//Start Test Code
+	void CheckElement() {
+		if (selectedElements.Count == 0)
+			return;
+		//Because this  version of the prototype only allows a single element to 
+		//be selected, we can use that 0th element to pick the spell.
+		switch (selectedElements [0].type) {
+		case ElementType.water:
+			CastHealSpell();
+			break;
+		case ElementType.air:
+			CastTeleportSpell();
+			break;
 		}
 	}
 	//End test Code
