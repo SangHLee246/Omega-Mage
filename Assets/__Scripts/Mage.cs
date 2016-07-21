@@ -721,12 +721,14 @@ public class Mage : PT_MonoBehaviour {
 			materials [i].color = originalColors [i];
 			speed = 2;
 		}
+		ClearElements ();
 	}
 
 	void UnShowHeal() {
 		for (int i=0; i<materials.Length; i++) {
 			materials[i].color = originalColors[i];
 		}
+		ClearElements ();
 	}
 
 	//Start Test Code
