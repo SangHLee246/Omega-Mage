@@ -16,7 +16,7 @@ public class EnemyBug : PT_MonoBehaviour, Enemy {
 	}
 
 	public string roomXMLString;
-	public float speed = 0.5f;
+	public static float speed = 0.5f;
 	public float health = 10;
 	public float damageScale = 0.8f;
 	public float damageScaleDuration = 0.25f;

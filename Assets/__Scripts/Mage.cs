@@ -80,7 +80,7 @@ public class Mage : PT_MonoBehaviour {
 
 	//Test Code
 	public int showHealingFrames = 2; //# frames to show healing
-	public int HealsLeft = 1; //amount of heals left
+	//public int HealsLeft = 1; //amount of heals left
 	//public float showTeleportFrames = 2; //# of frames to show teleporting
 	public float TeleportTime = 3f;
 	//End of Test Code
@@ -373,9 +373,9 @@ public class Mage : PT_MonoBehaviour {
 		//be selected, we can use that 0th element to pick the spell.
 		switch (selectedElements [0].type) {
 		case ElementType.water:
-				health = 4;
+				//health = 4;
 				ShowHeal();
-				HealsLeft = 0;
+				//HealsLeft = 0;
 				break;
 			//Limit healing somehow
 			//TODO: Add other element types later
@@ -407,8 +407,8 @@ public class Mage : PT_MonoBehaviour {
 		//be selected, we can use that 0th element to pick the spell.
 		switch (selectedElements [0].type) {
 		case ElementType.earth:
-
-			GameObject.Find("EnemyBug").GetComponent<EnemyBug>().speed = 0.1f;
+			EnemyBug.speed = 0.1f;
+			//GameObject.Find("EnemyBug").GetComponent<EnemyBug>().speed = 0.1f;
 			break;
 			//TODO: Add other element types later
 		}
@@ -686,10 +686,13 @@ public class Mage : PT_MonoBehaviour {
 
 	//Test code here
 	void ShowHeal() {
-		foreach (Material m in materials) {
-			m.color = Color.blue;
-		}
-		remainingHealingFrames = showHealingFrames;
+		//if (HealsLeft > 0) {
+			health = 4;
+			foreach (Material m in materials) {
+				m.color = Color.blue;
+			}
+			remainingHealingFrames = showHealingFrames;
+		//}
 	}
 
 	void ShowTeleport() {
