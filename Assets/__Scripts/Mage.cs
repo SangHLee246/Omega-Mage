@@ -81,7 +81,8 @@ public class Mage : PT_MonoBehaviour {
 	//Test Code
 	public int showHealingFrames = 2; //# frames to show healing
 	public int HealsLeft = 1; //amount of heals left
-	public int showTeleportFrames = 2; //# of frames to show teleporting
+	//public float showTeleportFrames = 2; //# of frames to show teleporting
+	public float TeleportTime = 3f;
 	//End of Test Code
 
 	public bool ___________________;
@@ -117,8 +118,8 @@ public class Mage : PT_MonoBehaviour {
 	//Test Code
 	public Color[] originalColors;
 	public Material[] materials; //All the materials of this & its children
-	public int remainingHealingFrames = 0; //Healing frames left
-	public int remainingTeleportFrames = 0; //Teleport frames left
+	public float remainingHealingFrames = 0; //Healing frames left
+	//public float remainingTeleportFrames = 0; //Teleport frames left
 	//End of Test Code
 
 	void Awake() {
@@ -156,12 +157,12 @@ public class Mage : PT_MonoBehaviour {
 			}
 		}
 
-		if (remainingTeleportFrames > 0) {
-			remainingTeleportFrames--;
-			if (remainingTeleportFrames == 0) {
-				UnShowTeleport ();
-			}
-		}
+		//if (remainingTeleportFrames > 0) {
+		//	remainingTeleportFrames--;
+		//	if (remainingTeleportFrames == 0) {
+		//		UnShowTeleport ();
+		//	}
+		//}
 		//end test code
 
 		//Find whether the mouse button 0 was pressed or released this frame
@@ -693,10 +694,23 @@ public class Mage : PT_MonoBehaviour {
 
 	void ShowTeleport() {
 		foreach (Material m in materials) {
-			m.color = Color.black;
+			m.color = Color.cyan;
 			speed = 100;
 		}
-		remainingTeleportFrames = showTeleportFrames;
+	}
+
+	IEnumerator Count() {
+		float time = 0;
+		while (time < TeleportTime) {
+			time += Time.deltaTime;
+			ShowTeleport();
+			yield return null;
+		}
+		while (time > 0) {
+			time -= Time.deltaTime;
+			UnShowTeleport ();
+			yield return null;
+		}
 	}
 
 	void UnShowTeleport() {
@@ -723,7 +737,7 @@ public class Mage : PT_MonoBehaviour {
 			CastHealSpell();
 			break;
 		case ElementType.air:
-			CastTeleportSpell();
+			StartCoroutine(Count());
 			break;
 		}
 	}
